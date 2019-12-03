@@ -179,6 +179,10 @@ void OptionsScreenDevice::init()
     addListItem(actions, PA_NITRO);
     addListItem(actions, PA_DRIFT);
     addListItem(actions, PA_LOOK_BACK);
+    if (UserConfigParams::m_enable_side_view_keys) {
+      addListItem(actions, PA_LOOK_LEFT);
+      addListItem(actions, PA_LOOK_RIGHT);
+    }
     addListItem(actions, PA_RESCUE);
     addListItem(actions, PA_PAUSE_RACE);
 
@@ -282,6 +286,14 @@ void OptionsScreenDevice::updateInputButtons()
 
     //I18N: Key binding name
     renameRow(actions, i++, _("Look Back"), PA_LOOK_BACK);
+
+    if (UserConfigParams::m_enable_side_view_keys) {
+      //I18N: Key binding name
+      renameRow(actions, i++, _("Look Left"), PA_LOOK_LEFT);
+
+      //I18N: Key binding name
+      renameRow(actions, i++, _("Look Right"), PA_LOOK_RIGHT);
+    }
 
     //I18N: Key binding name
     renameRow(actions, i++, _("Rescue"), PA_RESCUE);

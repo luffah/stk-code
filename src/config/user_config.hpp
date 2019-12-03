@@ -1037,6 +1037,10 @@ namespace UserConfigParams
             PARAM_DEFAULT( StringUserConfigParam("", "commandline",
                              "Allows one to set commandline args in config file") );
 
+    PARAM_PREFIX BoolUserConfigParam        m_enable_side_view_keys
+            PARAM_DEFAULT( BoolUserConfigParam(false, "enable_side_view_keys",
+                               "Whether to enable keys to look right and left sides") );
+
     // TODO? implement blacklist for new irrlicht device and GUI
     PARAM_PREFIX std::vector<std::string>   m_blacklist_res;
 

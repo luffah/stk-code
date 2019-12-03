@@ -51,6 +51,10 @@ private:
     bool  m_fire;
     /** True if the kart looks (and shoots) backwards. */
     bool  m_look_back;
+    /** True if the kart looks leftwards. */
+    bool  m_look_left;
+    /** True if the kart looks rightwards. */
+    bool  m_look_right;
 public:
     void setSteer(float f);
     void setAccel(float f);
@@ -60,6 +64,8 @@ public:
     void setRescue(bool b);
     void setFire(bool b);
     void setLookBack(bool b);
+    void setLookLeft(bool b);
+    void setLookRight(bool b);
 
     // ------------------------------------------------------------------------
     KartControl()
@@ -78,6 +84,8 @@ public:
         m_rescue    = false;
         m_fire      = false;
         m_look_back = false;
+        m_look_left = false;
+        m_look_right = false;
     }   // reset
     // ------------------------------------------------------------------------
     /** Tests if two KartControls are equal. 
@@ -150,6 +158,12 @@ public:
     /** Returns if the kart wants to look back (which also implies that it
      *  will fire backwards. */
     bool getLookBack() const { return m_look_back; }
+    /** Returns if the kart wants to look left (which also implies that it
+     *  will fire leftwards. */
+    bool getLookLeft() const { return m_look_left; }
+    /** Returns if the kart wants to look right (which also implies that it
+     *  will fire rightwards. */
+    bool getLookRight() const { return m_look_right; }
 };
 
 #endif

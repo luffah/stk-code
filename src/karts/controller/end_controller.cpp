@@ -177,6 +177,8 @@ void EndController::update(int ticks)
 {
     // This is used to enable firing an item backwards.
     m_controls->setLookBack(false);
+    m_controls->setLookLeft(false);
+    m_controls->setLookRight(false);
     m_controls->setNitro(false);
     m_controls->setBrake(false);
     m_controls->setAccel(1.0f);

@@ -231,6 +231,26 @@ void CameraNormal::getCameraSettings(float *above_kart, float *cam_angle,
             }
             break;
         }
+    case CM_SIDE_LEFT: // Same as CM_NORMAL except it looks leftwards
+        {
+            *above_kart = 1.0f;
+            *cam_angle  = kp->getCameraBackwardUpAngle() * DEGREE_TO_RAD;
+            *sideway    = 1;
+            *distance   = 0.2f;
+            *smoothing  = false;
+            *cam_roll_angle = 0.0f;
+            break;
+        }
+    case CM_SIDE_RIGHT: // Same as CM_NORMAL except it looks rightwards
+        {
+            *above_kart = 1.0f;
+            *cam_angle  = kp->getCameraBackwardUpAngle() * DEGREE_TO_RAD;
+            *sideway    = -1;
+            *distance   = 0.2f;
+            *smoothing  = false;
+            *cam_roll_angle = 0.0f;
+            break;
+        }
     case CM_CLOSEUP: // Lower to the ground and closer to the kart
         {
             *above_kart = 0.75f;

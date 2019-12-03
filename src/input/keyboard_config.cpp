@@ -17,6 +17,7 @@
 //  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
+#include "config/user_config.hpp"
 #include "input/keyboard_config.hpp"
 
 #include "io/xml_node.hpp"
@@ -62,6 +63,10 @@ void KeyboardConfig::setDefaultBinds()
     setBinding(PA_RESCUE,      Input::IT_KEYBOARD, IRR_KEY_BACK);
     setBinding(PA_FIRE,        Input::IT_KEYBOARD, IRR_KEY_SPACE);
     setBinding(PA_LOOK_BACK,   Input::IT_KEYBOARD, IRR_KEY_B);
+    if (UserConfigParams::m_enable_side_view_keys) {
+      setBinding(PA_LOOK_LEFT,   Input::IT_KEYBOARD, IRR_KEY_X);
+      setBinding(PA_LOOK_RIGHT,  Input::IT_KEYBOARD, IRR_KEY_C);
+    }
     setBinding(PA_PAUSE_RACE,  Input::IT_KEYBOARD, IRR_KEY_ESCAPE);
 
     setBinding(PA_MENU_UP,     Input::IT_KEYBOARD, IRR_KEY_UP);

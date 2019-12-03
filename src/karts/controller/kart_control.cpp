@@ -79,6 +79,14 @@ void KartControl::setLookBack(bool b)
 {
     m_look_back   = b;
 }   // setLookBack
+void KartControl::setLookLeft(bool b)
+{
+    m_look_left   = b;
+}   // setLookLeft
+void KartControl::setLookRight(bool b)
+{
+    m_look_right   = b;
+}   // setLookRight
 // ----------------------------------------------------------------------------
 /** Copies the important data from this objects into a memory buffer. */
 void KartControl::saveState(BareNetworkString *buffer) const

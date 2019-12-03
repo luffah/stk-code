@@ -2085,8 +2085,7 @@ void Kart::handleMaterialGFX(float dt)
             {
                 camera->setMode(Camera::CM_FALLING);
             }
-            else if (camera->getMode() != Camera::CM_NORMAL &&
-                     camera->getMode() != Camera::CM_REVERSE)
+            else if (camera->getMode() > Camera::CM_NORMAL)
             {
                 camera->setMode(Camera::CM_NORMAL);
             }

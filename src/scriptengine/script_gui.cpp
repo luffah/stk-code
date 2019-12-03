@@ -247,6 +247,10 @@ namespace Scripting
             engine->RegisterEnumValue("PlayerAction", "RESCUE", PA_RESCUE);
             engine->RegisterEnumValue("PlayerAction", "FIRE", PA_FIRE);
             engine->RegisterEnumValue("PlayerAction", "LOOK_BACK", PA_LOOK_BACK);
+            if (UserConfigParams::m_enable_side_view_keys) {
+              engine->RegisterEnumValue("PlayerAction", "LOOK_LEFT", PA_LOOK_LEFT);
+              engine->RegisterEnumValue("PlayerAction", "LOOK_RIGHT", PA_LOOK_RIGHT);
+            }
             engine->RegisterEnumValue("PlayerAction", "PAUSE_RACE", PA_PAUSE_RACE);
             engine->RegisterEnumValue("PlayerAction", "MENU_UP", PA_MENU_UP);
             engine->RegisterEnumValue("PlayerAction", "MENU_DOWN", PA_MENU_DOWN);

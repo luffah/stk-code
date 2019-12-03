@@ -60,9 +60,11 @@ public:
     /* Only used for the normal camera. */
     enum Mode
     {
+        CM_REVERSE,           //!< Looking backwards
+        CM_SIDE_LEFT,           //!< Looking backwards
+        CM_SIDE_RIGHT,           //!< Looking backwards
         CM_NORMAL,            //!< Normal camera mode
         CM_CLOSEUP,           //!< Closer to kart
-        CM_REVERSE,           //!< Looking backwards
         CM_LEADER_MODE,       //!< for deleted player karts in follow the leader
         CM_SIMPLE_REPLAY,
         CM_FALLING

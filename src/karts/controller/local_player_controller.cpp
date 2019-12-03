@@ -258,17 +258,25 @@ void LocalPlayerController::update(int ticks)
                 m_sky_particles_emitter->setRotation(Vec3(0, 180, 0));
             }
         }
-        else
+        else if (m_controls->getLookLeft())
+        { 
+          camera->setMode(Camera::CM_SIDE_LEFT);
+        }
+        else if (m_controls->getLookRight())
         {
-            if (camera->getMode() == Camera::CM_REVERSE)
-            {
+          camera->setMode(Camera::CM_SIDE_RIGHT);
+        }
+        else if (camera->getMode() == Camera::CM_REVERSE ||
+              camera->getMode() == Camera::CM_SIDE_LEFT ||
+              camera->getMode() == Camera::CM_SIDE_RIGHT
+             )
+        {
                 camera->setMode(Camera::CM_NORMAL);
                 if (m_sky_particles_emitter)
                 {
                     m_sky_particles_emitter->setPosition(Vec3(0, 30, 100));
                     m_sky_particles_emitter->setRotation(Vec3(0, 0, 0));
                 }
-            }
         }
     }
 
