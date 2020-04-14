@@ -964,6 +964,11 @@ namespace UserConfigParams
         PARAM_DEFAULT(IntUserConfigParam(0, "minimap_display",
                       "Minimap: 0 bottom-left, 1 middle-right, 2 hidden, 3 center"));
 
+    // ---- Radar
+    PARAM_PREFIX BoolUserConfigParam         m_radar_enabled
+        PARAM_DEFAULT(BoolUserConfigParam(false, "enable",
+                      "Enable radar (show karts and key elements)"));
+
     // ---- Handicap
     PARAM_PREFIX GroupUserConfigParam       m_handicap
             PARAM_DEFAULT( GroupUserConfigParam("Handicap",

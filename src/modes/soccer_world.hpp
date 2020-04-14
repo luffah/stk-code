@@ -178,6 +178,8 @@ public:
     // ------------------------------------------------------------------------
     const Vec3& getBallPosition() const
         { return (Vec3&)m_ball_body->getCenterOfMassTransform().getOrigin(); }
+    const Vec3& getBallLinearVelocity() const
+        { return (Vec3&)m_ball_body->getLinearVelocity(); }
     // ------------------------------------------------------------------------
     bool ballNotMoving() const
     {
