@@ -47,6 +47,8 @@ GameSetup::GameSetup()
     m_server_name_utf8 = StringUtils::wideToUtf8
         (StringUtils::xmlDecode(server_name));
     m_extra_server_info = -1;
+    printf("\n\nclear custom positions\n\n");
+    m_custom_positions.clear();
     m_is_grand_prix.store(false);
     reset();
 }   // GameSetup
@@ -178,7 +180,7 @@ void GameSetup::sortPlayersForGrandPrix(
 void GameSetup::sortPlayersForGame(
     std::vector<std::shared_ptr<NetworkPlayerProfile> >& players) const
 {
-    if (!isGrandPrix())
+    if (!isGrandPrix() && m_custom_positions.empty())
     {
         std::random_device rd;
         std::mt19937 g(rd());
@@ -186,7 +188,38 @@ void GameSetup::sortPlayersForGame(
     }
     if (!RaceManager::get()->teamEnabled() ||
         ServerConfig::m_team_choosing)
-        return;
+    {
+      if (!m_custom_positions.empty())
+      {
+        std::map<uint32_t, int> current_positions;
+        std::vector<int> used_positions;
+        for (unsigned i = 0; i < players.size(); i++)
+        {
+          const uint32_t id = players[i]->getUId();
+          current_positions[id] = i;
+        }
+        int next_pos;
+        uint32_t old_id;
+        int players_size = players.size();
+        for (auto const& it : m_custom_positions)
+        { 
+          next_pos = it.second;
+          /* manage conflicts */
+          while (std::find(used_positions.begin(), used_positions.end(), next_pos) != used_positions.end()) {
+            next_pos++;
+            if (next_pos >= players_size) continue;
+          }
+          used_positions.push_back(next_pos);
+          if (next_pos >= players_size) continue;
+          /* now stupidly swap values */
+          old_id = players[next_pos]->getUId();
+          iter_swap(players.begin() + current_positions[it.first], players.begin() + next_pos);
+          current_positions[old_id] = current_positions[it.first];
+          current_positions[it.first] = next_pos;
+        }
+      }
+      return;
+    }
     for (unsigned i = 0; i < players.size(); i++)
     {
         players[i]->setTeam((KartTeam)(i % 2));

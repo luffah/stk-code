@@ -164,6 +164,8 @@ public:
     KartTeam getTeam() const                          { return m_team.load(); }
     // ------------------------------------------------------------------------
     const std::string& getCountryCode() const        { return m_country_code; }
+    /** Returns the uid id of this player. */
+    uint32_t getUId() const                            { return m_online_id * 100 + m_local_player_id * 10 + m_host_id; }
 };   // class NetworkPlayerProfile
 
 #endif // HEADER_NETWORK_PLAYER_PROFILE

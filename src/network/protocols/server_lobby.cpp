@@ -181,6 +181,7 @@ ServerLobby::ServerLobby() : LobbyProtocol()
     m_available_commands = "help commands music kick to public "
         "teamchat gnu nognu standings record tell "
         "installaddon uninstalladdon liststkaddon listlocaladdon "
+        "wantpos setpos showpos "
         "listserveraddon playerhasaddon playeraddonscore serverhasaddon";
 
     m_fixed_lap = ServerConfig::m_fixed_lap_count;
@@ -6295,6 +6296,148 @@ void ServerLobby::handleServerCommand(Event* event,
         //     mode -= 3;
         handleServerConfiguration(peer, difficulty, mode, goal_target);
     }
+    else if (argv[0] == "wantpos")
+    {
+        std::string msg;
+        const bool game_started = m_state.load() != WAITING_FOR_START_GAME;
+        if (game_started){
+            msg =  "Please wait race ends";
+            sendStringToPeer(msg, peer);
+            return;
+        }
+        if (m_game_setup->isGrandPrix() || !ServerConfig::m_live_players)
+        {
+            msg = "Server doesn't support setpos";
+            sendStringToPeer(msg, peer);
+            return;
+        }
+        if (argv.size() != 2)
+        {
+            msg = "Usage: /wantpos <int>, change start position of the player (red: 2,4,6,8,10,12,14; blue: 1,3,5,7,9,11,13)";
+            sendStringToPeer(msg, peer);
+            return;
+        }
+        std::shared_ptr<NetworkPlayerProfile>& me = peer->getPlayerProfiles()[0];
+        std::string name = StringUtils::wideToUtf8(me->getName());
+        uint32_t online_id = me->getUId();
+        int position = std::stoi(argv[1]);
+        if (position != 0) position -= 1;
+        if ((me->getTeam() == KART_TEAM_BLUE) && (position % 2) == 0)
+        {
+            msg = "As blue, you can't set a position for red. Please use an odd number or change team.";
+            sendStringToPeer(msg, peer);
+            return;
+        }
+        if ((me->getTeam() == KART_TEAM_RED) && (position % 2) == 1)
+        {
+            msg = "As red, you can't set a position for blue. Please use an even number or change team.";
+            sendStringToPeer(msg, peer);
+            return;
+        }
+        // FIXME : add a check to avoid /wantpos 16 (max is 14)
+        m_game_setup->setCustomPosition(online_id, position);
+        /* FIXME: live change can't be done cause startup position is stored on client side, until the player leave the game, 
+         * you can only exchange position with live join in a precise order
+         * e.g. : A [ 1 ] and B [ 3 ] want to exchange position,
+         *  both will have to go back to lobby and B [ 1 ] will have to join the race before A [ 3 ] */ 
+        /* FIXME: impossible with current client,  to ask for a position (in team) > #players (in team) */
+        msg = "(" + name + " want to start at position " +  std::to_string(position+1) + ")";
+        sendStringToAllPeers(msg);
+        return;
+    }
+    else if (argv[0] == "setpos")
+    {
+        std::string msg;
+        const bool game_started = m_state.load() != WAITING_FOR_START_GAME;
+        if (game_started){
+            msg =  "Please wait race ends";
+            sendStringToPeer(msg, peer);
+            return;
+        }
+        if (!hasHostRights(peer))
+        {
+            msg = "You are not server owner";
+            sendStringToPeer(msg, peer);
+            return;
+        }
+        if (m_game_setup->isGrandPrix() || !ServerConfig::m_live_players)
+        {
+            msg = "Server doesn't support setpos";
+            sendStringToPeer(msg, peer);
+            return;
+        }
+        if (argv.size() != 3) {
+            msg = "Usage: /setpos <playername> <int>, change start position of the player (red: 2,4,6,8,10,12,14; blue: 1,3,5,7,9,11,13)";
+            sendStringToPeer(msg, peer);
+            return;
+        }
+
+        std::vector<std::shared_ptr<NetworkPlayerProfile> > players =  STKHost::get()->getAllPlayerProfiles();
+        uint32_t online_id=0;
+        std::string name;
+
+        for (unsigned i = 0; i < players.size(); i++)
+        {
+          name = StringUtils::wideToUtf8(players[i]->getName());
+          if (name == argv[1]) {
+             online_id = players[i]->getUId();
+             break;
+          }
+        }
+        if (online_id == 0) {
+          msg = argv[1] + " not found";
+          sendStringToPeer(msg, peer);
+          return;
+        }
+        int position = std::stoi(argv[2]);
+        if (position !=0) position -= 1;
+        // FIXME : add a check to avoid /wantpos 16 (max is 14)
+        m_game_setup->setCustomPosition(online_id, position);
+        msg = "(" + name + " will start at position " +  std::to_string(position+1) + ")";
+        sendStringToAllPeers(msg);
+        return;
+    }
+    else if (argv[0] == "showpos")
+    { 
+        std::string msg = "";
+        if (! m_game_setup->isGrandPrix() && m_game_setup->getCustomPositions().empty())
+        { 
+          msg = "(the start position are shuffled)";
+          sendStringToPeer(msg, peer);
+          return;
+        }
+        std::vector<std::shared_ptr<NetworkPlayerProfile> > players =  STKHost::get()->getAllPlayerProfiles();
+        m_game_setup->sortPlayersForGame(players);
+        std::vector<std::string> blue_names;
+        std::vector<std::string> red_names;
+        for (unsigned i = 0; i < players.size(); i++)
+        {
+          if (players[i]->getTeam() == KART_TEAM_RED) 
+            red_names.push_back(StringUtils::wideToUtf8(players[i]->getName()));
+          else
+            blue_names.push_back(StringUtils::wideToUtf8(players[i]->getName()));
+        }
+
+        /* show players and positions (even for red; odd for blue) */
+        msg += "RED  Team: ";
+        for (unsigned i = 0; i < red_names.size(); i++)
+        {
+          msg += red_names[i] + "[" + std::to_string(1 + i * 2) + "]" ;
+          if (i != red_names.size() - 1)
+            msg += ", ";
+        }
+        msg += "\nBLUE Team: ";
+        for (unsigned i = 0; i < blue_names.size(); i++)
+        {
+          msg += blue_names[i] + "[" + std::to_string(2 + i * 2) + "]" ;
+          if (i != blue_names.size() - 1)
+            msg += ", ";
+        }
+
+        /* / this code was broadly a copy paste of GameSetup::sortPlayersForGame */
+        sendStringToAllPeers(msg);
+        return;
+    }
     else if (argv[0] == "spectate")
     {
         if (ServerConfig::m_soccer_tournament || ServerConfig::m_only_host_riding)
@@ -7012,7 +7155,7 @@ void ServerLobby::handleServerCommand(Event* event,
     }
     else if (argv[0] == "version")
     {
-        std::string msg = "1.2-kimden 201107 beta";
+        std::string msg = "1.2-kimden + set position mod";
         sendStringToPeer(msg, peer);
     }
     else if (argv[0] == "register")

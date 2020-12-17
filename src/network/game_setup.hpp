@@ -29,6 +29,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <map>
 
 class NetworkPlayerProfile;
 class NetworkString;
@@ -136,6 +137,9 @@ public:
     void sortPlayersForGrandPrix(
         std::vector<std::shared_ptr<NetworkPlayerProfile> >& players) const;
     // ------------------------------------------------------------------------
+    std::map<uint32_t, int> m_custom_positions;
+    void setCustomPosition(uint32_t player, int position)   { m_custom_positions[player] = position; }
+    std::map<uint32_t, int> getCustomPositions()   { return m_custom_positions; }
     void sortPlayersForGame(
         std::vector<std::shared_ptr<NetworkPlayerProfile> >& players) const;
     // ------------------------------------------------------------------------
